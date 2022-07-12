@@ -155,25 +155,16 @@ class Blockchain(object):
  
         guess = f'{last_proof}{proof}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
-        #print ("*", end="")
-        return guess_hash[:4] == "0000"
+        return guess_hash[:2] == "12"
 
     @property
     def last_block(self):
         return self.chain[-1]
 
-
-
-#amServer = amServer('hostmame');
-#amServer.guid = 'AM01'
 blockchain = Blockchain()
-
-#print(Blockchain)
-#print(amServer.guid)
 
 app = Flask(__name__)
 node_identifier = str(uuid4()).replace('-','')
-#node_identifier = 'amchain' #+node_identifier
 
 @app.route('/mine', methods = ['GET'])
 def mine():
@@ -244,7 +235,8 @@ def register_nodes():
         'total_nodes': list(blockchain.nodes),
     }
     return jsonify(response), 201
-# I Love You, AM <3
+
+# JSON
 @app.route('/save',methods=['GET'])
 def save_json():
     with open('file.json', 'w') as fw:
@@ -275,7 +267,19 @@ def load_json():
         'filename': 'file.json',
     }
     return jsonify(response), 200
-# I Love You, AM <3
+
+# blockchain explorer
+# 
+
+@app.route('/chain/<index>')
+def get_block(index):
+
+    index = int(index)
+    response = {
+        'chain': blockchain.chain[index-1],
+    }
+    return jsonify(response), 200
+
 
 @app.route('/nodes/resolve', methods=['GET'])
 def consensus():
@@ -291,9 +295,15 @@ def consensus():
             'message': 'Our chain is authoritative',
             'chain': blockchain.chain
         }
- 
     return jsonify(response), 200
     
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    if sys.argv[1] != 'server':
+        raise RuntimeError(
+            f"Usage mhchain.py server [host] [port]"
+        )
 
+    host = sys.argv[2]
+    port = int(sys.argv[3])
+    print ('Welcome to mhchain at ',host, ':', port)
+    app.run(host, port)
