@@ -12,29 +12,6 @@ from uuid import uuid4
 import requests
 from flask import Flask, jsonify, request
 
-MAX_LINE = 64*1024
-MAX_HEADERS = 100
-
-class ThisServer:
-    def __init__(self, host):
-        self._host=host
-        self._port=2012
-        self._server_name='localhost'
-
-    def serve_forever(self):
-        serv_sock = socket.socket(
-                socket.AF_INIT)
-
-
-class Hustler:
-    pass
-
-class Parazit:
-    pass
-
-class Blazer:
-    pass
-
 class Blockchain(object):
     def __init__(self):
         self.chain = []
@@ -54,6 +31,7 @@ class Blockchain(object):
         
         parsed_url = urlparse(address)
         self.nodes.add(parsed_url.netloc)
+        print("Add new node: ", parsed_url.netloc)
     
     def valid_chain(self, chain):
         """
